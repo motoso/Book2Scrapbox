@@ -1,9 +1,8 @@
 #
 # ScrapboxページにGyazoが含まれているときOCRテキストを追加
 #
-# Gyazo APIのためのアクセストークンはあらかじめ取得しておき
-# .bash_profileなどに書いておく
-#    export GYAZO_TOKEN="0123456..."
+# Gyazo APIのためのアクセストークンは環境変数GYAZO_ACCESS_TOKENに設定しておく必要がある
+#
 #  アクセストークンは以下から取得
 #    https://gyazo.com/api?lang=ja
 #
@@ -12,8 +11,7 @@
 #  2. GyazoのOCRテキストをデータに追加する
 #     % ruby addocr.rb origdata.json > newdata.json
 #  3. 作成されたJSONデータをインポートする
-#
-#  2020/3/16 Toshiyuki Masui
+
 
 require 'json'
 require 'gyazo'
@@ -25,7 +23,8 @@ unless jsonfile && File.exist?(jsonfile)
   exit
 end
 
-token = ENV['GYAZO_TOKEN']
+# token = `op get item YOUR_1password_UUID | jq -r '.details.sections[0].fields[] | select(.n == "credential").v'`.chomp
+token = ENV['GYAZO_ACCESS_TOKEN']
 gyazo = Gyazo::Client.new access_token: token
 
 origdata = JSON.parse(File.read(jsonfile))
