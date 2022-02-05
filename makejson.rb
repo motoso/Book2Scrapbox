@@ -24,13 +24,13 @@ jpegfiles = ARGV.grep /\.jpg/i
     STDERR.puts file
   
     # S3にアップロード
-    STDERR.puts "ruby #{home}/bin/upload #{file}"
-    s3url = `ruby #{home}/bin/upload #{file}`.chomp
-    STDERR.puts s3url
+    # STDERR.puts "ruby #{home}/bin/upload #{file}"
+    # s3url = `ruby #{home}/bin/upload #{file}`.chomp
+    # STDERR.puts s3url
 
     # Gyazoにアップロード
-    STDERR.puts "ruby #{home}/bin/gyazo_upload #{file}"
-    gyazourl = `ruby #{home}/bin/gyazo_upload #{file}`.chomp
+    STDERR.puts "gyazo-cli #{file}"
+    gyazourl = `gyazo-cli #{file}`.chomp
     STDERR.puts gyazourl
     
     sleep 2
@@ -49,7 +49,8 @@ jpegfiles = ARGV.grep /\.jpg/i
     end
 
     lines << line1
-    lines << "[[#{s3url} #{gyazourl}]]"
+    # lines << "[[#{s3url} #{gyazourl}]]"
+    lines << "[[#{gyazourl}]]"
     lines << line1
     lines << ""
 
