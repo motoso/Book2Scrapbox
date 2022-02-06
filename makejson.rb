@@ -2,14 +2,16 @@
 # 自炊PDFから分解したjpgをS3とGyazoにアップロードしてScrapboxのJSONを作成
 #
 require 'json'
-
-home = ENV['HOME']
+require 'gyazo'
 
 jsondata = {}
 pages = []
 jsondata['pages'] = pages
 
 jpegfiles = ARGV.grep /\.jpg/i
+
+token = ENV['GYAZO_ACCESS_TOKEN']
+gyazo = Gyazo::Client.new access_token: token
 
 (0..jpegfiles.length).each { |i|
   file = jpegfiles[i]
@@ -30,7 +32,8 @@ jpegfiles = ARGV.grep /\.jpg/i
 
     # Gyazoにアップロード
     STDERR.puts "gyazo-cli #{file}"
-    gyazourl = `gyazo-cli #{file}`.chomp
+    res = gyazo.upload imagefile: file
+    gyazourl = res[:permalink_url]
     STDERR.puts gyazourl
     
     sleep 2
