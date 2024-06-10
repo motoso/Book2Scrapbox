@@ -4,11 +4,15 @@
 require 'json'
 require 'gyazo'
 
+
+MAX_RETRIES = 3
+retry_count = 0
+
 jsondata = {}
 pages = []
 jsondata['pages'] = pages
 
-jpegfiles = ARGV.grep /\.jpg/i
+jpegfiles = ARGV.grep /\.(jpg|jpeg)/i
 
 token = ENV['GYAZO_ACCESS_TOKEN']
 gyazo = Gyazo::Client.new access_token: token
@@ -31,10 +35,21 @@ gyazo = Gyazo::Client.new access_token: token
     # STDERR.puts s3url
 
     # Gyazoにアップロード
-    STDERR.puts "gyazo-cli #{file}"
-    res = gyazo.upload imagefile: file
-    gyazourl = res[:permalink_url]
-    STDERR.puts gyazourl
+    begin
+      STDERR.puts "gyazo-cli #{file}"
+      res = gyazo.upload imagefile: file
+      gyazourl = res[:permalink_url]
+      STDERR.puts gyazourl
+    rescue Net::HTTPError, Timeout::Error => e
+      if retry_count < MAX_RETRIES
+        retry_count += 1
+        puts "Network error occurred, retrying in 5 seconds (attempt #{retry_count} of #{MAX_RETRIES})..."
+        sleep 5
+        retry
+      else
+        puts "Max retry attempts exceeded, error: #{e.message}"
+      end
+    end
     
     sleep 2
 
