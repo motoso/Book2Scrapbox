@@ -12,7 +12,7 @@ jsondata = {}
 pages = []
 jsondata['pages'] = pages
 
-jpegfiles = ARGV.grep /\.jpg/i
+jpegfiles = ARGV.grep /\.(jpg|jpeg)/i
 
 token = ENV['GYAZO_ACCESS_TOKEN']
 gyazo = Gyazo::Client.new access_token: token
